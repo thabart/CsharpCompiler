@@ -28,7 +28,8 @@ namespace Compiler.Pe
             {
                 MsDosHeader = MsDosHeader.Parse(bytes),
                 MsDosStub = ParseMsdosStub(bytes),
-                PeHeader = ParsePeSignature(bytes)
+                PeHeader = ParsePeSignature(bytes),
+                CoffHeader = CoffHeader.Parse(bytes)
             };
         }
 
