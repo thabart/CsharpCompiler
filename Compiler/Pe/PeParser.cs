@@ -24,13 +24,20 @@ namespace Compiler.Pe
                 throw new ArgumentException("the size is not correct. At least > to 336");
             }
 
-            return new PeFile
+            var result = new PeFile
             {
                 MsDosHeader = MsDosHeader.Parse(bytes),
                 MsDosStub = ParseMsdosStub(bytes),
-                PeHeader = ParsePeSignature(bytes),
+                PeSignature = ParsePeSignature(bytes),
                 CoffHeader = CoffHeader.Parse(bytes)
             };
+
+            if (result.CoffHeader.SizeOfOptionalHeader > 0)
+            {
+                result.PeHeader = PeHeader.Parse(bytes, result.CoffHeader.SizeOfOptionalHeader);
+            }
+
+            return result;
         }
 
         private static IEnumerable<byte> ParseMsdosStub(IEnumerable<byte> bytes)

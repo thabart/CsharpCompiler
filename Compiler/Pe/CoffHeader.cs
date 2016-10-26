@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Compiler.Helpers;
 
 namespace Compiler.Pe
 {
@@ -66,17 +67,16 @@ namespace Compiler.Pe
 
         #endregion
 
-        #region Public methods
+        #region Internal methods
 
-        public static CoffHeader Parse(IEnumerable<byte> peBytes)
+        internal static CoffHeader Parse(IEnumerable<byte> peBytes)
         {
             var coffBytes = peBytes.Skip(132).Take(20);
             var bmachine = BitConverter.ToInt16(new[] { coffBytes.ElementAt(0), coffBytes.ElementAt(1) }, 0);
-            var values = (Machines[])Enum.GetValues(typeof(Machines));
-            var machine = (Machines)Enum.ToObject(typeof(Machines), bmachine);
-            if (!values.Contains(machine))
+            Machines machine;
+            if (!EnumHelper.TryGetValue(bmachine, out machine))
             {
-                throw new ArgumentException(string.Format("the machine {0} is not supported", machine));
+                throw new ArgumentException(string.Format("the machine {0} is not supported", bmachine));
             }
 
             var numberOfSections = BitConverter.ToInt16(new[] { coffBytes.ElementAt(2), coffBytes.ElementAt(3) }, 0);
@@ -85,11 +85,10 @@ namespace Compiler.Pe
             var numberOfSymbols = BitConverter.ToInt32(new[] { coffBytes.ElementAt(12), coffBytes.ElementAt(13), coffBytes.ElementAt(14), coffBytes.ElementAt(15) }, 0);
             var sizeOfOptionalHeader = BitConverter.ToInt16(new[] { coffBytes.ElementAt(16), coffBytes.ElementAt(17) }, 0);
             var bcharacteristic = BitConverter.ToInt16(new[] { coffBytes.ElementAt(18), coffBytes.ElementAt(19) }, 0);
-            var cvalues = (Characteristics[])Enum.GetValues(typeof(Characteristics));
-            var characteristic = (Characteristics)Enum.ToObject(typeof(Characteristics), bcharacteristic);
-            if (!cvalues.Contains(characteristic))
+            Characteristics characteristic;
+            if (!EnumHelper.TryGetValue(bcharacteristic, out characteristic))
             {
-                throw new ArgumentException(string.Format("the characteristic {0} is not supported", characteristic));
+                throw new ArgumentException(string.Format("the characteristic {0} is not supported", bcharacteristic));
             }
 
             return new CoffHeader

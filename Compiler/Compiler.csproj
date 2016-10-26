@@ -43,9 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Pe\CoffHeader.cs" />
     <Compile Include="Pe\MsDosHeader.cs" />
     <Compile Include="Pe\PeFile.cs" />
+    <Compile Include="Pe\PeHeader.cs" />
     <Compile Include="Pe\PeParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
