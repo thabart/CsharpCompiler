@@ -43,9 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assembly.cs" />
-    <Compile Include="MsDosHeader.cs" />
-    <Compile Include="PeFileHeader.cs" />
+    <Compile Include="Pe\CoffHeader.cs" />
+    <Compile Include="Pe\MsDosHeader.cs" />
+    <Compile Include="Pe\PeFile.cs" />
+    <Compile Include="Pe\PeParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
