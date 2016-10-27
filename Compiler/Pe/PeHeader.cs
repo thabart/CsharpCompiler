@@ -22,6 +22,38 @@ namespace Compiler.Pe
         /// Identifies the state of the image file.
         /// </summary>
         public MagicNumbers Magic { get; set; }
+        /// <summary>
+        /// Major linker version.
+        /// </summary>
+        public byte MajorLinkerVersion { get; set; }
+        /// <summary>
+        /// Minor linker version.
+        /// </summary>
+        public byte MinorLinkerVersion { get; set; }
+        /// <summary>
+        /// Size of the code (text) section.
+        /// </summary>
+        public int SizeOfCode { get; set; }
+        /// <summary>
+        /// Size of the initialized data section.
+        /// </summary>
+        public int SizeOfInitializedData { get; set; }
+        /// <summary>
+        /// Size of the unitialized data section.
+        /// </summary>
+        public int SizeOfUnitializedData { get; set; }
+        /// <summary>
+        /// The address of the entry point relative to the image base when the executable file is loaded into memory.
+        /// </summary>
+        public int AddressOfEntryPoint { get; set; }
+        /// <summary>
+        /// The address that is relative to the image base of the beginning of code section when it is loaded into memory.
+        /// </summary>
+        public int BaseOfCode { get; set; }
+        /// <summary>
+        /// The address that is relative to the image base of the beginning of data section when it is loaded into memory.
+        /// </summary>
+        public int BaseOfData { get; set; }
 
         #endregion
 
@@ -37,10 +69,31 @@ namespace Compiler.Pe
                 throw new ArgumentException(string.Format("the magic {0} is not supproted", bMagic));
             }
 
-            return new PeHeader
+            var majorLinkerVersion = peHeaderBytes.ElementAt(2);
+            var minorLinkerVersion = peHeaderBytes.ElementAt(3);
+            var sizeOfCode = BitConverter.ToInt32(new[] { peHeaderBytes.ElementAt(4), peHeaderBytes.ElementAt(5), peHeaderBytes.ElementAt(6), peHeaderBytes.ElementAt(7) }, 0);
+            var sizeOfInitializedData = BitConverter.ToInt32(new[] { peHeaderBytes.ElementAt(8), peHeaderBytes.ElementAt(9), peHeaderBytes.ElementAt(10), peHeaderBytes.ElementAt(11) }, 0);
+            var sizeOfUnitalizedData = BitConverter.ToInt32(new[] { peHeaderBytes.ElementAt(12), peHeaderBytes.ElementAt(13), peHeaderBytes.ElementAt(14), peHeaderBytes.ElementAt(15) }, 0);
+            var addressOfEntryPoint = BitConverter.ToInt32(new[] { peHeaderBytes.ElementAt(16), peHeaderBytes.ElementAt(17), peHeaderBytes.ElementAt(18), peHeaderBytes.ElementAt(19) }, 0);
+            var baseOfCode = BitConverter.ToInt32(new[] { peHeaderBytes.ElementAt(20), peHeaderBytes.ElementAt(21), peHeaderBytes.ElementAt(22), peHeaderBytes.ElementAt(23) }, 0);
+            var result = new PeHeader
             {
-                Magic = magic
+                Magic = magic,
+                MajorLinkerVersion = majorLinkerVersion,
+                MinorLinkerVersion = minorLinkerVersion,
+                SizeOfCode = sizeOfCode,
+                SizeOfInitializedData = sizeOfInitializedData,
+                SizeOfUnitializedData = sizeOfUnitalizedData,
+                AddressOfEntryPoint = addressOfEntryPoint,
+                BaseOfCode = baseOfCode
             };
+            if (magic == MagicNumbers.PE32)
+            {
+                var baseOfData = BitConverter.ToInt32(new[] { peHeaderBytes.ElementAt(24), peHeaderBytes.ElementAt(25), peHeaderBytes.ElementAt(26), peHeaderBytes.ElementAt(27) }, 0);
+                result.BaseOfData = baseOfData;
+            }
+
+            return result;
         }
 
         #endregion
